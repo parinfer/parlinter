@@ -1,0 +1,23 @@
+{
+  "name": "parlinter",
+  "version": "0.1.0",
+  "description": "A minimal formatting linter for Lisp code (using Parinfer)",
+  "main": "parlinter.js",
+  "repository": "https://github.com/shaunlebron/parlinter",
+  "author": "Shaun Lebron <shaunewilliams@gmail.com>",
+  "license": "MIT",
+  "binary": {
+    "parlinter": "parlinter.js"
+  },
+  "files": [
+    "parlinter.js"
+  ],
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "get-stdin": "^5.0.1",
+    "glob": "^7.1.2",
+    "minimist": "^1.2.0",
+    "parinfer": "^2.0.0",
+    "readline": "^1.3.0"
+  }
+}
