@@ -18,6 +18,43 @@ formatting-related diffs in their commits.
 
 [Parinfer]:http://shaunlebron.github.io/parinfer/
 
+## Usage
+
+```
+npm install -g parlinter
+or
+yarn global add parlinter
+```
+
+```
+$ parlinter
+
+Usage: parlinter [opts] [filename|glob ...]
+
+Available options:
+  --write                  Edit the file in-place. (Beware!)
+  --trim                   Trim trailing whitespace.
+  --list-different or -l   Print filenames of files that are different from Parlinter formatting.
+  --stdin                  Read input from stdin.
+  --version or -v          Print Parlinter version.
+```
+
+[Glob patterns](https://github.com/isaacs/node-glob#glob-primer) must be quoted.
+
+## Examples
+
+Format all clojure files
+
+```
+parlinter --trim --write "**/*.@(clj|cljs|cljc|edn)"
+```
+
+Check if all clojure files are properly formatted (non-zero exit code if not):
+
+```
+parlinter -l "**/*.@(clj|cljs|cljc|edn)"
+```
+
 ## Styling Rules
 
 __Close-Parens__: No other tokens will ever be moved to a different line, but
@@ -71,55 +108,71 @@ expressions.
 [cljfmt]:https://github.com/weavejester/cljfmt
 [zprint]:https://github.com/kkinnear/zprint
 
-## Notable Styles affected
+## Notable effects in real world Clojure
+
+Following examples in Clojure.
 
 TODO: Verify compatibility with [clojure-mode] and others?
 
 [clojure-mode]:https://github.com/clojure-emacs/clojure-mode#indentation-options
 
-TODO example: JSON style data
+### 1. Multi-arity function bodies
 
-TODO example: Multi-arity function bodies
-
-TODO example: Comment lines at end of a list
-
-TODO example: `comment` forms
-
-TODO example: `#_` ignore forms
-
-## Usage
-
-```
-npm install -g parlinter
-or
-yarn global add parlinter
+```clj
 ```
 
-```
-$ parlinter
+### 2. Comment lines at end of a list
 
-Usage: parlinter [opts] [filename|glob ...]
-
-Available options:
-  --write                  Edit the file in-place. (Beware!)
-  --trim                   Trim trailing whitespace.
-  --list-different or -l   Print filenames of files that are different from Parlinter formatting.
-  --stdin                  Read input from stdin.
-  --version or -v          Print Parlinter version.
+```clj
 ```
 
-[Glob patterns](https://github.com/isaacs/node-glob#glob-primer) must be quoted.
 
-## Examples
+### 3. Dedented lines
 
-Format all clojure files
+Function bodies are sometimes indented to its grandparent form rather than its
+parent:
 
+```clj
+;; bad
+(foo bar (fn [a]
+  (println a)))
+
+;; minimal fix by Parlinter
+(foo bar (fn [a]
+          (println a))) ;; <-- nudged to be inside "(fn"
 ```
-parlinter --trim --write "**/*.@(clj|cljs|cljc|edn)"
+
+Same thing is seen when JSON-style indentation is used for maps:
+
+```clj
+;; bad
+:cljsbuild {
+  :builds [...]
+}
+
+;; minimal fix by Parlinter
+:cljsbuild {
+            :builds [...]} ;; <-- nudged to be inside "{"
+
+;; fine (but not automated)
+:cljsbuild {:builds [...]}
+
+;; fine (but not automated)
+:cljsbuild
+{:builds [...]}
 ```
 
-Check if all clojure files are properly formatted (non-zero exit code if not):
+Comment and ignore forms are commonly added retroactively without adjusting
+indentation:
 
-```
-parlinter -l "**/*.@(clj|cljs|cljc|edn)"
+```clj
+;; bad
+#_(defn foo []
+  (bar baz))     ;; <-- will be nudged by Parlinter
+
+;; bad
+(comment
+(defn foo []     ;; <-- will be nudged by Parlinter
+  (bar baz))
+)
 ```
