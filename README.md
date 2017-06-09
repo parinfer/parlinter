@@ -97,6 +97,14 @@ Check if all clojure files are properly formatted (non-zero exit code if not):
 parlinter -l "**/*.{clj,cljs,cljc,edn}"
 ```
 
+## Performance
+
+The examples above take ~0.5s to run against the [Clojure] and [ClojureScript]
+project repos.
+
+[Clojure]:https://github.com/clojure/clojure
+[ClojureScript]:https://github.com/clojure/clojurescript
+
 ## Compatibility
 
 TODO: check compatibility with:
