@@ -1,22 +1,67 @@
 # Parlinter
 
-A minimal formatting linter for Lisp projects.
+Allow [Parinfer] usage on a team project with this friendly linter.
 
-Its key feature is that it allows project collaborators to use [Parinfer] in
-their editors without forcing others to do so.
-
-Works on most Lisp dialects! (e.g. Clojure, Racket, Scheme)
-
-## Rationale
+Parinfer editors already lint files before opening them to make its special
+inference work, but performing this as a project-level linter solves the noisy
+diff problem that happens when used only in isolation.
 
 Unlike full pretty-printers like [clojure.pprint], [fipp], [cljfmt], and
-[zprint], Parlinter preserves as much of the original styling as possible. The
-hope is that it serves as a compromise for teams that wish to maintain
-flexibility of alignment preferences while also enabling users (especially
-newcomers) to enjoy the power of [Parinfer]—without imposing large
-formatting-related diffs in their commits.
+[zprint], Parlinter preserves as much of the original styling as
+possible—allowing teams to maintain some flexibility of style preferences while
+also enabling users (especially newcomers) to enjoy the power of Parinfer.
 
 [Parinfer]:http://shaunlebron.github.io/parinfer/
+
+## Two Simple Rules
+
+__Close-Parens__ at the beginning or end of a line are flushed against
+their previous token.
+
+```clj
+;; bad
+(foo
+  (bar
+    baz
+    )
+  )
+
+;; fixed
+(foo
+  (bar
+    baz))
+```
+
+__Indentation__ of a line must be kept to the RIGHT of its parent open-paren, without
+crossing the threshold of another.
+
+```clj
+ (foo (bar)
+; ^   ^     ;; <-- min/max indentation points of the following line
+    ...)
+
+;; fine
+(foo (bar)
+  baz)
+
+;; fine
+(foo (bar)
+     baz)
+
+;; bad
+(foo (bar)
+baz)        ;; <-- fixed by indenting +1
+
+;; bad
+(foo (bar)
+      baz)  ;; <-- fixed by indenting -1
+```
+
+[clojure.pprint]:https://clojure.github.io/clojure/clojure.pprint-api.html
+[fipp]:https://github.com/brandonbloom/fipp
+[cljfmt]:https://github.com/weavejester/cljfmt
+[zprint]:https://github.com/kkinnear/zprint
+
 
 ## Usage
 
@@ -55,60 +100,7 @@ Check if all clojure files are properly formatted (non-zero exit code if not):
 parlinter -l "**/*.@(clj|cljs|cljc|edn)"
 ```
 
-## Styling Rules
-
-__Close-Parens__: No other tokens will ever be moved to a different line, but
-close-parens at the beginning or end of a line will be moved flush against their
-previous token.
-
-```clj
-;; bad
-(foo
-  (bar
-    baz
-    )
-  )
-
-;; fixed by Parlinter
-(foo
-  (bar
-    baz))
-```
-
-__Indentation__: Whether you prefer 2-space indentation or token-aligned
-indentation, your style will be preserved as long as it falls within Parinfer's
-thresholds (determined by open-parens).  Offending lines are nudged to the
-closest threshold, while preserving relative indentation of the affected child
-expressions.
-
-```clj
-;; fine
-(foo bar
-     baz)
-
-;; fine
-(foo bar
-  baz)
-```
-
-```clj
-;; bad
-(foo
-(bar
-   baz))
-
-;; fixed by Parlinter
-(foo
- (bar     ;; <-- minimally nudged
-    baz)) ;; <-- relative indentation maintained after nudge
-```
-
-[clojure.pprint]:https://clojure.github.io/clojure/clojure.pprint-api.html
-[fipp]:https://github.com/brandonbloom/fipp
-[cljfmt]:https://github.com/weavejester/cljfmt
-[zprint]:https://github.com/kkinnear/zprint
-
-## Notable effects in real world Clojure
+## Implications in Clojure
 
 Following examples in Clojure.
 
@@ -127,7 +119,7 @@ TODO: Verify compatibility with [clojure-mode] and others?
 ```
 
 
-### 3. Dedented lines
+### 3. Recessed lines
 
 Function bodies are sometimes indented to its grandparent form rather than its
 parent:
