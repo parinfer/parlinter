@@ -1,67 +1,64 @@
 # Parlinter
 
-Allow [Parinfer] usage on a team project with this friendly linter.
+Allow [Parinfer] on a Lisp team with this friendly linter. Rationale:
 
-Parinfer editors already lint files before opening them to make its special
-inference work, but performing this as a project-level linter solves the noisy
-diff problem that happens when used only in isolation.
-
-Unlike full pretty-printers like [clojure.pprint], [fipp], [cljfmt], and
-[zprint], Parlinter preserves as much of the original styling as
-possible—allowing teams to maintain some flexibility of style preferences while
-also enabling users (especially newcomers) to enjoy the power of Parinfer.
+- Parinfer creates noisy diffs on team projects, because it must lint before
+  opening files to work correctly.
+- If a team likes (or can tolerate) Parinfer-style code, a project-level linter
+  can make it easy to integrate.
 
 [Parinfer]:http://shaunlebron.github.io/parinfer/
 
-## Two Simple Rules
+## Two Rules
 
-__Close-Parens__ at the beginning or end of a line are flushed against
-their previous token.
+Unlike full pretty-printers like [cljfmt] or [zprint], Parlinter preserves as
+much of the original styling as possible.
+
+__Rule #1__ - Close-parens at the beginning of a line are moved to the end
+of its previous token:
 
 ```clj
 ;; bad
-(foo
-  (bar
-    baz
-    )
-  )
+(--- (---
+   ) ---
+ ) ^
+ ^
 
 ;; fixed
-(foo
-  (bar
-    baz))
+(--- (---)
+     ---)^
+        ^
 ```
 
-__Indentation__ of a line must be kept to the RIGHT of its parent open-paren, without
-crossing the threshold of another.
+__Rule #2__ - Indentation is kept to the RIGHT of the parent open-paren, without
+crossing the threshold of another:
 
 ```clj
- (foo (bar)
-; ^   ^     ;; <-- min/max indentation points of the following line
-    ...)
-
-;; fine
-(foo (bar)
-  baz)
-
-;; fine
-(foo (bar)
-     baz)
-
 ;; bad
-(foo (bar)
-baz)        ;; <-- fixed by indenting +1
+(--- (---)
+---)
 
-;; bad
-(foo (bar)
-      baz)  ;; <-- fixed by indenting -1
+;; fixed
+(--- (---)
+ ---)      ;; <-- nudged to the right
 ```
 
-[clojure.pprint]:https://clojure.github.io/clojure/clojure.pprint-api.html
-[fipp]:https://github.com/brandonbloom/fipp
-[cljfmt]:https://github.com/weavejester/cljfmt
-[zprint]:https://github.com/kkinnear/zprint
+```clj
+;; bad
+(--- (---)
+      ---)
 
+;; fixed
+(--- (---)
+     ---)  ;; <-- nudged to the left
+```
+
+See [Implications in Clojure] for clarity using real examples.
+
+See [Compatibility] with existing formatters.
+
+[Implications in Clojure]:#implications-in-clojure
+[Compatibility]:#compatibility
 
 ## Usage
 
@@ -88,38 +85,99 @@ Available options:
 
 ## Examples
 
-Format all clojure files
+Format all clojure files:
 
 ```
-parlinter --trim --write "**/*.@(clj|cljs|cljc|edn)"
+parlinter --trim --write "**/*.{clj,cljs,cljc,edn}"
 ```
 
 Check if all clojure files are properly formatted (non-zero exit code if not):
 
 ```
-parlinter -l "**/*.@(clj|cljs|cljc|edn)"
+parlinter -l "**/*.{clj,cljs,cljc,edn}"
 ```
 
-## Implications in Clojure
+## Compatibility
 
-Following examples in Clojure.
+TODO: check compatibility with:
 
-TODO: Verify compatibility with [clojure-mode] and others?
+- [clojure.pprint] data
+- [clojure-mode] code and data
+- [fipp] data
+- [cljfmt] code
+- [zprint] code
 
-[clojure-mode]:https://github.com/clojure-emacs/clojure-mode#indentation-options
+[clojure.pprint]:https://clojure.github.io/clojure/clojure.pprint-api.html
+[clojure-mode]:https://github.com/clojure-emacs/clojure-mode
+[fipp]:https://github.com/brandonbloom/fipp
+[cljfmt]:https://github.com/weavejester/cljfmt
+[zprint]:https://github.com/kkinnear/zprint
+
+## Common Results in Clojure
+
+A collection of common changes performed by the linter.
 
 ### 1. Multi-arity function bodies
 
-```clj
-```
-
-### 2. Comment lines at end of a list
+Sometimes function bodies for multi-arity functions are indented past the
+function params.
 
 ```clj
+;; bad
+(defn foo
+  "I have two arities."
+  ([x]
+    (foo x 1))
+  ([x y]
+    (+ x y)))
+
+;; fixed
+(defn foo
+  "I have two arities."
+  ([x]
+   (foo x 1))
+  ([x y]
+   (+ x y)))
 ```
 
+### 2. Close-parens after comments
 
-### 3. Recessed lines
+Since close-parens cannot be at the beginning of a line, they cannot come after
+comments.
+
+```clj
+;; bad
+(-> 10
+    (foo 20)
+    (bar 30)
+    ;; my comment
+    )
+
+;; fixed
+(-> 10
+    (foo 20)
+    (bar 30))
+    ;; my comment
+```
+
+### 3. Lines inside strings are not touched
+
+Indentation of lines inside multi-line strings is significant, so it is not
+modified:
+
+```clj
+;; bad
+(foo
+"Hello
+world")
+
+;; fixed
+(foo
+ "Hello
+world")    ;; <-- not nudged
+```
+
+### 4. Recessed function bodies
 
 Function bodies are sometimes indented to its grandparent form rather than its
 parent:
@@ -129,12 +187,14 @@ parent:
 (foo bar (fn [a]
   (println a)))
 
-;; minimal fix by Parlinter
+;; fixed
 (foo bar (fn [a]
           (println a))) ;; <-- nudged to be inside "(fn"
 ```
 
-Same thing is seen when JSON-style indentation is used for maps:
+### 5. Recessed lines after JSON-style `{`
+
+It is sometimes common to use JSON-style indentation in a top-level EDN config:
 
 ```clj
 ;; bad
@@ -142,7 +202,7 @@ Same thing is seen when JSON-style indentation is used for maps:
   :builds [...]
 }
 
-;; minimal fix by Parlinter
+;; fixed
 :cljsbuild {
             :builds [...]} ;; <-- nudged to be inside "{"
 
@@ -154,17 +214,30 @@ Same thing is seen when JSON-style indentation is used for maps:
 {:builds [...]}
 ```
 
+### 6. Recessed lines after `#_` and `comment`
+
 Comment and ignore forms are commonly added retroactively without adjusting
 indentation:
 
 ```clj
 ;; bad
 #_(defn foo []
-  (bar baz))     ;; <-- will be nudged by Parlinter
+  (bar baz))
 
+;; fixed
+#_(defn foo []
+   (bar baz))
+```
+
+```clj
 ;; bad
 (comment
-(defn foo []     ;; <-- will be nudged by Parlinter
+(defn foo []
   (bar baz))
 )
+
+;; fixed
+(comment
+ (defn foo []
+   (bar baz)))
 ```
