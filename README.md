@@ -75,7 +75,7 @@ Usage: parlinter [opts] [filename|glob ...]
 
 Available options:
   --write                  Edit the file in-place. (Beware!)
-  --trim                   Trim trailing whitespace.
+  --trim                   Remove lines that become empty after linting.
   --list-different or -l   Print filenames of files that are different from Parlinter formatting.
   --stdin                  Read input from stdin.
   --version or -v          Print Parlinter version.

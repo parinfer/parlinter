@@ -41,15 +41,37 @@ const globOptions = {
   dot: true
 };
 
+function getLineEnding(text) {
+  // NOTE: We assume that if the CR char "\r" is used anywhere,
+  //       then we should use CRLF line-endings after every line.
+  var i = text.search("\r");
+  if (i !== -1) {
+    return "\r\n";
+  }
+  return "\n";
+}
+
+function trimOutput(input, output) {
+  const inLines = input.split(/\r?\n/);
+  const outLines = output.split(/\r?\n/);
+  const trimLines = [];
+  const empty = /^\s*$/;
+  for (let i = 0; i < outLines.length; i++) {
+    const emptyAfterLinting = !empty.test(inLines[i]) && empty.test(outLines[i]);
+    if (!emptyAfterLinting) {
+      trimLines.push(outLines[i]);
+    }
+  }
+  return trimLines.join(getLineEnding(output));
+}
+
 function format(input) {
   const result = parinfer.parenMode(input);
   if (result.error) {
     throw result.error;
   }
-  if (trim) {
-    return result.text.replace(/ +$/gm, "");
-  }
-  return result.text;
+  const output = result.text;
+  return trim ? trimOutput(input, output) : output;
 }
 
 function check(input) {
@@ -79,7 +101,7 @@ if (argv["help"] || (!filepatterns.length && !stdin)) {
     "\n" +
     "Available options:\n" +
     "  --write                  Edit the file in-place. (Beware!)\n" +
-    "  --trim                   Trim trailing whitespace.\n" +
+    "  --trim                   Remove lines that become empty after linting.\n" +
     "  --list-different or -l   Print filenames of files that are different from Parlinter formatting.\n" +
     "  --stdin                  Read input from stdin.\n" +
     "  --version or -v          Print Parlinter version.\n" +
