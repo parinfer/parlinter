@@ -272,7 +272,7 @@ Linting may throw off the alignment of comments, due to paren movement:
       ]
   (+ foo bar))
 
-;; fixed  
+;; fixed
 (let [foo 1  ; this is number one
       bar 2]  ; this is number two
   (+ foo bar))
