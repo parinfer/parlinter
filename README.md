@@ -186,14 +186,14 @@ modified:
 
 ```clj
 ;; bad
-(foo
+(foo (bar
 "Hello
-world")
+world"))
 
 ;; fixed
-(foo
- "Hello
-world")    ;; <-- not nudged
+(foo (bar
+      "Hello
+world"))    ;; <-- not nudged
 ```
 
 ### 4. Recessed function bodies
