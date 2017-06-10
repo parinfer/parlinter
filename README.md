@@ -1,6 +1,6 @@
-# Parlinter
+# Par-linter
 
-Allow [Parinfer] on a Lisp team with this friendly linter. Rationale:
+A friendly linter to allow [Parinfer] usage on a Lisp team. Rationale:
 
 - Parinfer creates noisy diffs on team projects, because it must lint before
   opening files to work correctly.
@@ -9,13 +9,27 @@ Allow [Parinfer] on a Lisp team with this friendly linter. Rationale:
 
 [Parinfer]:http://shaunlebron.github.io/parinfer/
 
+## Want a Quick Look?
+
+- See concrete examples of [Common Lint Results in Clojure]
+- See the only [Two Rules] it follows (and how other formatters comply).
+- [Try it out on your project] then check `git diff -w` to verify the minor changes.
+
+[Common Lint Results in Clojure]:#common-lint-results-in-clojure
+[Two Rules]:#two-rules
+[Try it out on your project]:#usage
+
 ## Two Rules
 
 Unlike full pretty-printers like [cljfmt] or [zprint], Parlinter preserves as
 much of the original styling as possible.
 
-__Rule #1__ - Close-parens at the beginning of a line are moved to the end
-of its previous token:
+### Rule #1
+
+Close-parens at the beginning of a line are moved to the end of its previous
+token:
+
+> __Key__: We use `---` instead of `foo` or `bar` to draw your eye towards parens and holistic forms.
 
 ```clj
 ;; bad
@@ -30,8 +44,15 @@ of its previous token:
         ^
 ```
 
-__Rule #2__ - Indentation is kept to the RIGHT of the parent open-paren, without
-crossing the threshold of another:
+> __Conventional Formatters__ comply with Rule #1 for all cases except to allow
+> [close-parens after a comment].  Parlinter does NOT make this exception.
+
+[close-parens after a comment]:#2-close-parens-after-comments
+
+### Rule #2
+
+Indentation is kept to the RIGHT of the parent open-paren, without crossing the
+threshold of another:
 
 ```clj
 ;; bad
@@ -53,14 +74,14 @@ crossing the threshold of another:
      ---)  ;; <-- nudged to the left
 ```
 
-See [Implications in Clojure] for clarity using real examples.
+> __Conventional formatters__ comply with Rule #2 for all cases, except
+> [clojure.pprint] and older versions of [clojure-mode], which cause extra indentation
+> of [multi-arity function bodies].
 
-See [Compatibility] with existing formatters.
-
-[Implications in Clojure]:#implications-in-clojure
 [Compatibility]:#compatibility
+[multi-arity function bodies]:#1-multi-arity-function-bodies
 
-## Usage
+## Install
 
 ```
 npm install -g parlinter
@@ -83,7 +104,7 @@ Available options:
 
 [Glob patterns](https://github.com/isaacs/node-glob#glob-primer) must be quoted.
 
-## Examples
+## Try it out
 
 Format all clojure files:
 
@@ -91,10 +112,16 @@ Format all clojure files:
 parlinter --trim --write "**/*.{clj,cljs,cljc,edn}"
 ```
 
+Verify non-whitespace changes below for peace-of-mind:  (AST not changed)
+
+```
+git diff -w
+```
+
 Check if all clojure files are properly formatted (non-zero exit code if not):
 
 ```
-parlinter -l "**/*.{clj,cljs,cljc,edn}"
+$ parlinter -l "**/*.{clj,cljs,cljc,edn}"
 ```
 
 ## Performance
@@ -105,25 +132,9 @@ project repos.
 [Clojure]:https://github.com/clojure/clojure
 [ClojureScript]:https://github.com/clojure/clojurescript
 
-## Compatibility
+## Common Lint Results in Clojure
 
-TODO: check compatibility with:
-
-- [clojure.pprint] data
-- [clojure-mode] code and data
-- [fipp] data
-- [cljfmt] code
-- [zprint] code
-
-[clojure.pprint]:https://clojure.github.io/clojure/clojure.pprint-api.html
-[clojure-mode]:https://github.com/clojure-emacs/clojure-mode
-[fipp]:https://github.com/brandonbloom/fipp
-[cljfmt]:https://github.com/weavejester/cljfmt
-[zprint]:https://github.com/kkinnear/zprint
-
-## Common Results in Clojure
-
-A collection of common changes performed by the linter.
+A collection of common changes performed by Parlinter.
 
 ### 1. Multi-arity function bodies
 
@@ -135,9 +146,9 @@ function params.
 (defn foo
   "I have two arities."
   ([x]
-    (foo x 1))
+     (foo x 1))
   ([x y]
-    (+ x y)))
+     (+ x y)))
 
 ;; fixed
 (defn foo
@@ -249,3 +260,37 @@ indentation:
  (defn foo []
    (bar baz)))
 ```
+
+### 7. Vertically-aligned comments
+
+Linting may throw off the alignment of comments, due to paren movement:
+
+```clj
+;; bad
+(let [foo 1  ; this is number one
+      bar 2  ; this is number two
+      ]
+  (+ foo bar))
+
+;; fixed  
+(let [foo 1  ; this is number one
+      bar 2]  ; this is number two
+  (+ foo bar))
+```
+
+## Par-linter vs Par-infer
+
+Sorry if the similar name to [Parinfer] is confusing.  Parlinter is the same
+tool, but serves a distinct purpose—to allow users who don't use Parinfer to
+interface with those who do. Hence the separate name:
+
+- Par-__linter__ - lint files to allow paren inference
+- Par-__infer__ - infer parens while manipulating linted files
+
+I pronounce both by rhyming "far", then pronouncing the next word as it is.
+
+[clojure.pprint]:https://clojure.github.io/clojure/clojure.pprint-api.html
+[clojure-mode]:https://github.com/clojure-emacs/clojure-mode
+[fipp]:https://github.com/brandonbloom/fipp
+[cljfmt]:https://github.com/weavejester/cljfmt
+[zprint]:https://github.com/kkinnear/zprint
