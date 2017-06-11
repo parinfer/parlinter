@@ -48,8 +48,8 @@ token:
 
 ;; fixed
 (--- (---)
-     ---)^
-        ^
+    ---) ^
+       ^
 ```
 
 > __Conventional Formatters__ comply with Rule #1 for all cases except to allow
