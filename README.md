@@ -1,13 +1,21 @@
 # Par-linter
 
-A friendly linter to allow [Parinfer] usage on a Lisp team. Rationale:
+A friendly linter to allow [Parinfer] usage on your Lisp project. Rationale:
 
 - Parinfer creates noisy diffs on team projects, because it must lint before
   opening files to work correctly.
-- If a team likes (or can tolerate) Parinfer-style code, a project-level linter
-  can make it easy to integrate.
+- But Parinfer tidies up code in a style compliant with most Lisp styles anyway.
+- A project-level linter can automate this tidiness while allowing newcomers to use Parinfer.
 
-[Parinfer]:http://shaunlebron.github.io/parinfer/
+## Include newcomers on your project
+
+If you think [Parinfer] is a good tool to welcome newcomers into Lisp, you can
+make it possible for them to contribute to your project by adopting this small
+linter. They will thank you, and you will thank them!
+
+Make your project Parinfer friendly!
+
+![parinfer friendly](https://img.shields.io/badge/parinfer-friendly-ff69b4.svg)
 
 ## Want a Quick Look?
 
@@ -294,3 +302,5 @@ I pronounce both by rhyming "far", then pronouncing the next word as it is.
 [fipp]:https://github.com/brandonbloom/fipp
 [cljfmt]:https://github.com/weavejester/cljfmt
 [zprint]:https://github.com/kkinnear/zprint
+
+[Parinfer]:http://shaunlebron.github.io/parinfer/
