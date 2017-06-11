@@ -5,7 +5,7 @@ A friendly linter to allow [Parinfer] usage on your Lisp project. Rationale:
 - Parinfer creates noisy diffs on team projects, because it must lint before
   opening files to work correctly.
 - But Parinfer tidies up code in a style compliant with most Lisp styles anyway.
-- A project-level linter can automate this tidiness while allowing newcomers to use Parinfer.
+- A project-level linter can automate this tidiness while allowing others to opt-in to Parinfer.
 
 ## Include newcomers on your project
 
