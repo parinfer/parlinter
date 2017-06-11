@@ -1,4 +1,4 @@
-# Par-linter
+# Parlinter
 
 A friendly linter to allow [Parinfer] usage on your Lisp project. Rationale:
 
