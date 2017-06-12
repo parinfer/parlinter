@@ -29,18 +29,16 @@ Parlinter performs minimal source transformation in order to satisfy two rules:
 Close-parens at the beginning of a line are moved to the end of its previous
 token:
 
-> __Key__: We use `---` instead of `foo` or `bar` to draw your eye towards parens and holistic forms.
-
 ```clj
 ;; bad
-(--- (---
-   ) ---
+(foo (bar
+   ) baz
  ) ^
  ^
 
 ;; fixed
-(--- (---)
-    ---) ^
+(foo (bar)
+    baz) ^
        ^
 ```
 
@@ -49,29 +47,50 @@ token:
 
 [close-parens after a comment]:#2-close-parens-after-comments
 
-### Rule #2 - no confusing indentation
+### Rule #2 - ordered indentation
 
-Indentation is kept to the RIGHT of the parent open-paren, without crossing the
-threshold of another:
+Newlines must be indented to the right of their parent open-paren:
+
+```clj
+(foo (bar)
+|
+|
+>
+  bar)     ;; must be indented to the right of the point above: ✔️
+  ^
+```
+
+But they cannot extend too far right into another open-paren:
+
+```clj
+(foo (bar)
+      |
+      |
+      <
+     bar)  ;; must be indented to the left of the point above: ✔️
+     ^
+```
+
+To fix, indentation is clamped to these points:
 
 ```clj
 ;; bad
-(--- (---)
----)
+(foo (bar)
+baz)
 
 ;; fixed
-(--- (---)
- ---)      ;; <-- nudged to the right
+(foo (bar)
+ baz)      ;; <-- nudged to the right
 ```
 
 ```clj
 ;; bad
-(--- (---)
-      ---)
+(foo (bar)
+      baz)
 
 ;; fixed
-(--- (---)
-     ---)  ;; <-- nudged to the left
+(foo (bar)
+     baz)  ;; <-- nudged to the left
 ```
 
 > __Conventional formatters__ comply with Rule #2 for all cases, except
