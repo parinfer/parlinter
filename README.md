@@ -1,38 +1,32 @@
 # Parlinter
 
-A friendly linter to allow [Parinfer] usage on your Lisp project. Rationale:
+> compatible with [Clojure Style Guide]
 
-- Parinfer creates noisy diffs on team projects, because it must lint before
-  opening files to work correctly.
-- But Parinfer tidies up code in a style compliant with most Lisp styles anyway.
-- A project-level linter can automate this tidiness while allowing others to opt-in to Parinfer.
+A low-friction linter for Lisp that finally allows your team members to use [Parinfer].
 
-## Include newcomers on your project
+Unlike full pretty-printers, it preserves as much of the original source as
+possible, only fixing _confusing indentation_ and _dangling close-parens_. But
+it's still flexible, allowing any-space indentation within thresholds.
 
-If you think [Parinfer] is a good tool to welcome newcomers into Lisp, you can
-make it possible for them to contribute to your project by adopting this small
-linter. They will thank you, and you will thank them!
-
-Make your project Parinfer friendly!
+Adopt Parlinter to make your project Parinfer friendly!
 
 ![parinfer friendly](https://img.shields.io/badge/parinfer-friendly-ff69b4.svg)
 
 ## Want a Quick Look?
 
-- See concrete examples of [Common Lint Results in Clojure]
+- See concrete examples of [Common Lint Results in Clojure].
 - See the only [Two Rules] it follows (and how other formatters comply).
 - [Try it out on your project] then check `git diff -w` to verify the minor changes.
 
 [Common Lint Results in Clojure]:#common-lint-results-in-clojure
 [Two Rules]:#two-rules
-[Try it out on your project]:#usage
+[Try it out on your project]:#install
 
 ## Two Rules
 
-Unlike full pretty-printers like [cljfmt] or [zprint], Parlinter preserves as
-much of the original styling as possible.
+Parlinter performs minimal source transformation in order to satisfy two rules:
 
-### Rule #1
+### Rule #1 - no dangling close-parens
 
 Close-parens at the beginning of a line are moved to the end of its previous
 token:
@@ -57,7 +51,7 @@ token:
 
 [close-parens after a comment]:#2-close-parens-after-comments
 
-### Rule #2
+### Rule #2 - no confusing indentation
 
 Indentation is kept to the RIGHT of the parent open-paren, without crossing the
 threshold of another:
@@ -97,6 +91,8 @@ or
 yarn global add parlinter
 ```
 
+## Usage
+
 ```
 $ parlinter
 
@@ -112,7 +108,7 @@ Available options:
 
 [Glob patterns](https://github.com/isaacs/node-glob#glob-primer) must be quoted.
 
-## Try it out
+## Examples
 
 Format all clojure files:
 
@@ -134,15 +130,41 @@ $ parlinter -l "**/*.{clj,cljs,cljc,edn}"
 
 ## Performance
 
-The examples above take ~0.5s to run against the [Clojure] and [ClojureScript]
-project repos.
+It takes ~0.5s to run against ~40k lines. (tested on the [Clojure] and [ClojureScript] project repos)
+
+It was heavily optimized to allow [Parinfer] to run at 60hz on a ~3k line file
+while typing.
 
 [Clojure]:https://github.com/clojure/clojure
 [ClojureScript]:https://github.com/clojure/clojurescript
 
+## Compatibility
+
+_Syntactically_ compatible with Clojure, Racket, Scheme, and other Lisps that follow this syntax:
+
+- delimiters `(`, `{`, `[`
+- strings `"`
+- characters `\`
+- comments `;`
+
+_Culturally_ compatible as well\*:
+
+- [Lisp Indentation]
+- [Clojure Style Guide]
+- [Google Common Lisp Style Guide]
+- [Racket Style Guide]
+
+> _\* some allow close-parens on their own line, but still allow them to be
+removed as Parlinter does_
+
+[Lisp Indentation]:http://wiki.c2.com/?LispIndentation
+[Racket Style Guide]:http://docs.racket-lang.org/style/Textual_Matters.html
+[Google Common Lisp Style Guide]:https://google.github.io/styleguide/lispguide.xml
+
 ## Common Lint Results in Clojure
 
-A collection of common changes performed by Parlinter.
+A collection of common changes performed by Parlinter on Clojure code—the
+Lisp I am most familiar with.
 
 ### 1. Multi-arity function bodies
 
@@ -286,16 +308,29 @@ Linting may throw off the alignment of comments, due to paren movement:
   (+ foo bar))
 ```
 
-## Par-linter vs Par-infer
+## History and Future
 
-Sorry if the similar name to [Parinfer] is confusing.  Parlinter is the same
-tool, but serves a distinct purpose—to allow users who don't use Parinfer to
-interface with those who do. Hence the separate name:
+Though [Parinfer] was designed to lower the barrier for newcomers, it faced a
+practical problem of not allowing them to collaborate with people who didn't use
+it, defeating the entire purpose of its primary goal.
 
-- Par-__linter__ - lint files to allow paren inference
-- Par-__infer__ - infer parens while manipulating linted files
+Parlinter was designed as an answer to this problem, since there now seems to be
+a growing acceptance of linters and even full-formatters like [Prettier],
+[refmt], and [gofmt] in other language communities.
 
-I pronounce both by rhyming "far", then pronouncing the next word as it is.
+Thus, if we adopt Parlinter on our projects, we increase the likelihood of
+receiving patches from a new wave of excited newcomers.  And it perhaps
+communicates that we are willing to include a wider audience into our Lisp
+community.
+
+(It also opens the door for some exciting next-gen things I'm not yet ready to
+talk about.)
+
+Written for Lisp with <3
+
+[Prettier]:https://github.com/prettier/prettier
+[refmt]:https://facebook.github.io/reason/tools.html#tools-command-line-utilities-refmt
+[gofmt]:https://golang.org/cmd/gofmt/
 
 [clojure.pprint]:https://clojure.github.io/clojure/clojure.pprint-api.html
 [clojure-mode]:https://github.com/clojure-emacs/clojure-mode
@@ -303,4 +338,6 @@ I pronounce both by rhyming "far", then pronouncing the next word as it is.
 [cljfmt]:https://github.com/weavejester/cljfmt
 [zprint]:https://github.com/kkinnear/zprint
 
+
+[Clojure Style Guide]:https://github.com/bbatsov/clojure-style-guide
 [Parinfer]:http://shaunlebron.github.io/parinfer/
