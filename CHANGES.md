@@ -1,3 +1,7 @@
+# 1.0.1
+
+- fix `parlinter` binary publish
+
 # 1.0.0
 
 - Public release (readme changes)
