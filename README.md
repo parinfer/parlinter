@@ -1,7 +1,5 @@
 # Parlinter
 
-> compatible with [Clojure Style Guide]
-
 A low-friction linter for Lisp that finally allows your team members to use [Parinfer].
 
 Unlike full pretty-printers, it preserves as much of the original source as
@@ -15,7 +13,7 @@ Adopt Parlinter to make your project Parinfer friendly!
 ## Want a Quick Look?
 
 - See concrete examples of [Common Lint Results in Clojure].
-- See the only [Two Rules] it follows (and how other formatters comply).
+- See the only [Two Rules] it follows.
 - [Try it out on your project] then check `git diff -w` to verify the minor changes.
 
 [Common Lint Results in Clojure]:#common-lint-results-in-clojure
@@ -91,6 +89,10 @@ or
 yarn global add parlinter
 ```
 
+> Want to use as a plugin in your build environment instead? (e.g. lein, boot)  Help wanted! Please [create an issue].
+
+[create an issue]:https://github.com/shaunlebron/parlinter/issues/new
+
 ## Usage
 
 ```
@@ -147,7 +149,7 @@ _Syntactically_ compatible with Clojure, Racket, Scheme, and other Lisps that fo
 - characters `\`
 - comments `;`
 
-_Culturally_ compatible as well\*:
+_Culturally_ compatible with standard Lisp styles\*:
 
 - [Lisp Indentation]
 - [Clojure Style Guide]
@@ -308,23 +310,22 @@ Linting may throw off the alignment of comments, due to paren movement:
   (+ foo bar))
 ```
 
-## History and Future
+## Motivation
 
 Though [Parinfer] was designed to lower the barrier for newcomers, it faced a
-practical problem of not allowing them to collaborate with people who didn't use
-it, defeating the entire purpose of its primary goal.
+problem of practicality by not allowing them to collaborate smoothly with people
+who didn't use it. This friction was not part of the intended experience.
 
-Parlinter was designed as an answer to this problem, since there now seems to be
+Par<em>linter</em> was designed as an answer to this problem, since there now seems to be
 a growing acceptance of linters and even full-formatters like [Prettier],
-[refmt], and [gofmt] in other language communities.
+[refmt], and [gofmt] from other language communities.
 
-Thus, if we adopt Parlinter on our projects, we increase the likelihood of
-receiving patches from a new wave of excited newcomers.  And it perhaps
-communicates that we are willing to include a wider audience into our Lisp
-community.
+Thus, I hope that Parlinter at least spurs some thoughts on what is an
+acceptable amount of process around linting in Lisp, whether or not Parinfer is
+worth linting for, and how else we can help newcomers get into Lisp easier.
 
-(It also opens the door for some exciting next-gen things I'm not yet ready to
-talk about.)
+(It may also open the door for some exciting next-gen things I'm not yet ready
+to talk about.)
 
 Written for Lisp with <3
 
