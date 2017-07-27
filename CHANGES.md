@@ -1,3 +1,9 @@
+# 1.2.0
+
+- update to Parinfer 3.9.0
+  - shift comment indentation when parent forms are shifted
+  - [extend indentation contraints](https://github.com/shaunlebron/parinfer/blob/master/lib/test/cases/paren-mode.md#extending-indentation-constraints) for better stability
+
 # 1.1.0
 
 - update to Parinfer 2.2.1
