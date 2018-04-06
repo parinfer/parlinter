@@ -76,15 +76,6 @@ function format(input) {
   return trim ? trimOutput(input, output) : output;
 }
 
-function check(input) {
-  try {
-    const result = process(input);
-    return result.text === input;
-  } catch (e) {
-    return false;
-  }
-}
-
 function handleError(filename, e) {
   console.error(
     filename + ":" + (e.lineNo + 1) + ":" + e.x + " - " + e.message
@@ -141,15 +132,6 @@ if (stdin) {
       return;
     }
 
-    if (argv["list-different"]) {
-      if (!check(input)) {
-        if (!write) {
-          console.log(filename);
-        }
-        process.exitCode = 1;
-      }
-    }
-
     const start = Date.now();
 
     let output;
@@ -162,6 +144,15 @@ if (stdin) {
 
       handleError(filename, e);
       return;
+    }
+
+    if (argv["list-different"]) {
+      if (output !== input) {
+        if (!write) {
+          console.log(filename);
+        }
+        process.exitCode = 1;
+      }
     }
 
     if (write) {
