@@ -9,6 +9,9 @@
   "bin": {
     "parlinter": "parlinter.js"
   },
+  "scripts": {
+    "test": "./test.sh"
+  },
   "files": [
     "README.md",
     "CHANGES.md",
