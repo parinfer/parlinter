@@ -8,7 +8,7 @@ it's still flexible, allowing any-space indentation within thresholds.
 
 Adopt Parlinter to make your project Parinfer friendly!
 
-![parinfer friendly](https://img.shields.io/badge/parinfer-friendly-ff69b4.svg)
+![parinfer friendly](https://img.shields.io/badge/parinfer-friendly-ff69b4.svg) [![Build Status](https://travis-ci.org/shaunlebron/parlinter.svg?branch=master)](https://travis-ci.org/shaunlebron/parlinter)
 
 ## Want a Quick Look?
 
