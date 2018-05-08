@@ -1,6 +1,6 @@
 {
   "name": "parlinter",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "A minimal formatting linter for Lisp code (using Parinfer)",
   "main": "parlinter.js",
   "repository": "https://github.com/shaunlebron/parlinter",

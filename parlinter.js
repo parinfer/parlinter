@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Parlinter 1.2.0
+// Parlinter 1.3.0
 
 // Source copied from Prettier's CLI!  (MIT License)
 // https://github.com/prettier/prettier/blob/master/bin/prettier.js
@@ -15,7 +15,7 @@ const minimist = require("minimist");
 const readline = require("readline");
 const parinfer = require("parinfer");
 
-const version = "1.2.0";
+const version = "1.3.0";
 
 const argv = minimist(process.argv.slice(2), {
   boolean: ["write", "trim", "stdin", "help", "version", "list-different"],

@@ -1,3 +1,9 @@
+# 1.3.0
+
+- fix `--list-different` option (see [#4](https://github.com/shaunlebron/parlinter/pull/4), thanks [@zhanjing1214](https://github.com/zhanjing1214))
+  - only prints filenames of those unformatted
+  - returns correct exit code (1 for unformatted file is found, 0 otherwise)
+
 # 1.2.0
 
 - update to Parinfer 3.9.0
